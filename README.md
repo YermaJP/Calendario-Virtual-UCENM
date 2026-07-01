@@ -1,126 +1,137 @@
-# UCENM — Plataforma de Gestión Académica (versión Firebase)
+# UCENM — Plataforma de Gestión Académica
 ### Guía rápida para el maestro
 
 ---
 
-## ¿Qué cambió respecto a la versión anterior?
+## ¿Qué es esta aplicación?
 
-| Antes | Ahora |
-|---|---|
-| Datos guardados solo en el navegador (localStorage) | Datos en **Firestore**, visibles desde cualquier dispositivo |
-| Maestro entraba con un PIN fijo | Maestro entra con **correo y contraseña** (Firebase Authentication) |
-| Alumno entraba sin cuenta | Alumno sigue sin necesitar registro — internamente usa una sesión anónima para poder marcar tareas |
-| Hosting en Hostinger | **Firebase Hosting** (gratis, con SSL) |
-| "Tarea completada" era por dispositivo | Ahora es **compartido**: si un alumno la marca, todos la ven marcada |
+Esta herramienta le permite publicar su **calendario de clases**, **tareas** y **anuncios** para que sus alumnos puedan consultarlos fácilmente desde cualquier dispositivo. Funciona directamente en el navegador, sin instalar nada ni necesitar internet una vez descargada.
 
 ---
 
-## Configuración inicial (una sola vez)
+## Cómo abrir la aplicación
 
-### 1. Crear el proyecto en Firebase
+**Opción A — En su computadora (sin internet):**
+1. Haga **doble clic** en el archivo `index.html`.
+2. Se abre en su navegador (Chrome, Firefox, Edge).
+3. Elija su rol y comience a usarla.
 
-1. Vaya a [console.firebase.google.com](https://console.firebase.google.com/) e inicie sesión con una cuenta de Google.
-2. **Agregar proyecto** → póngale un nombre (ej. `ucenm-calendario`) → siga los pasos (puede desactivar Google Analytics, no es necesario).
-
-### 2. Registrar la app web
-
-1. En la página principal del proyecto, haga clic en el ícono **`</>`** (Web).
-2. Póngale un apodo (ej. "UCENM Web") y **NO** marque "Firebase Hosting" todavía (lo haremos por línea de comandos).
-3. Copie el objeto `firebaseConfig` que le muestra.
-4. Abra `lib/firebase-config.js` y reemplace los valores de ejemplo con los suyos.
-
-### 3. Activar Authentication
-
-1. En el menú lateral: **Compilación → Authentication → Comenzar**.
-2. Pestaña **Sign-in method** → active dos proveedores:
-   - **Correo electrónico/contraseña**
-   - **Anónimo**
-3. Pestaña **Users** → **Agregar usuario** → cree la cuenta del maestro (correo + contraseña). Esa será la cuenta con la que usted inicia sesión en la app.
-
-### 4. Activar Firestore
-
-1. Menú lateral: **Compilación → Firestore Database → Crear base de datos**.
-2. Elija **modo de producción** (las reglas de seguridad ya vienen incluidas en `firestore.rules`).
-3. Seleccione la región más cercana (ej. `us-central` o `us-east4`).
-
-### 5. Subir las reglas de seguridad y desplegar
-
-Necesita [Node.js](https://nodejs.org) instalado. Desde la carpeta del proyecto:
-
-```bash
-npm install -g firebase-tools
-firebase login
-```
-
-Edite `.firebaserc` y reemplace `TU_PROYECTO_ID` con el ID real de su proyecto (lo ve en Configuración del proyecto → General).
-
-Luego:
-
-```bash
-firebase deploy --only firestore:rules
-firebase deploy --only hosting
-```
-
-Al terminar, Firebase le da una URL pública (algo como `https://su-proyecto.web.app`). Esa es la que comparte con sus alumnos.
-
-> **Alternativa sin línea de comandos:** puede subir manualmente las reglas copiando el contenido de `firestore.rules` dentro de Firestore Database → Reglas → pegar → Publicar. Para el hosting sin CLI necesitaría otro proveedor de hosting estático (Netlify, Vercel, GitHub Pages), pero perdería la integración automática de "un clic" que da `firebase deploy`.
+**Opción B — Subida a un hosting (con internet, recomendada para compartir con alumnos):**
+Vea la sección "Cómo subir a Hostinger" más abajo.
 
 ---
 
-## Uso diario
+## Cómo cambiar el PIN del maestro
 
-**Como maestro:**
-1. Abra la URL de su app (o `index.html` localmente).
-2. Clic en **"Soy maestro"** → ingrese el correo y contraseña que creó en el paso 3.
-3. Cree clases, tareas y anuncios normalmente — se guardan en la nube y todos los alumnos los ven al instante.
+Abra el archivo `lib/config.js` con el Bloc de notas (Windows) o TextEdit (Mac).
 
-**Como alumno:**
-1. Clic en **"Soy alumno"** — entra directo, sin registro.
-2. Puede ver el calendario, tareas, anuncios, y marcar tareas como completadas (visible para todos).
+Busque esta línea:
+```
+pinMaestro: "ucenm2024",
+```
+
+Cámbiela por el PIN que desee, por ejemplo:
+```
+pinMaestro: "MiClave2026",
+```
+
+Guarde el archivo. La próxima vez que abra la app, el nuevo PIN será el correcto.
+
+> ⚠️ **Importante:** No comparta este archivo con los alumnos; solo usted debe tener acceso a él.
 
 ---
 
 ## Cómo cambiar el nombre de la materia, el maestro y el ciclo
 
-Abra `lib/config.js` y edite:
+En el mismo archivo `lib/config.js`, encontrará estas líneas:
 
-```js
+```
 nombreMateria: "Introducción a la Programación",
 nombreMaestro: "Prof. Carlos Medina",
 cicloAcademico: "I Período 2026",
 carrera: "Ingeniería en Sistemas",
 ```
 
-Guarde y vuelva a desplegar con `firebase deploy --only hosting`.
+Cámbielas por los datos de su clase. Por ejemplo:
+
+```
+nombreMateria: "Cálculo Diferencial",
+nombreMaestro: "Lic. Ana Torres",
+cicloAcademico: "II Período 2026",
+carrera: "Ingeniería Industrial",
+```
+
+Guarde el archivo. Al recargar la aplicación, los nuevos datos aparecerán en la cabecera y en el dashboard.
 
 ---
 
-## Botón Exportar / Importar / Restaurar ejemplo
+## Cómo subir la aplicación a Hostinger
 
-Funcionan igual que antes, pero ahora leen y escriben directo en Firestore (requieren estar logueado como maestro):
+1. Inicie sesión en su cuenta de Hostinger.
+2. Vaya al **Administrador de archivos** de su dominio o subdominio.
+3. Dentro de la carpeta `public_html`, suba **todos** los archivos y carpetas:
+   - `index.html`
+   - `css/` (carpeta completa)
+   - `lib/` (carpeta completa)
+   - `.htaccess`
+4. Abra su dominio en el navegador. La app debe funcionar inmediatamente.
+5. Comparta el enlace con sus alumnos.
 
-- **Exportar respaldo**: descarga un `.json` con todo lo que hay en la nube.
-- **Importar respaldo**: reemplaza los datos de Firestore con los del archivo (para todos los usuarios).
-- **Restaurar datos de ejemplo**: vuelve al contenido de muestra inicial (para todos).
+> **Tip:** Si usa un subdominio (por ejemplo `clases.sudominio.com`), suba los archivos dentro de la carpeta correspondiente a ese subdominio.
+
+---
+
+## Botón Exportar — ¿Para qué sirve?
+
+El botón **"Exportar respaldo"** (en el panel de administración, sección "Respaldo de datos") descarga un archivo llamado `ucenm-backup-YYYYMMDD.json` con todas sus clases, tareas y anuncios.
+
+Úselo para:
+- **Hacer una copia de seguridad** antes de limpiar el navegador.
+- **Compartir su contenido** con otro dispositivo (por ejemplo, pasar de su laptop a la computadora de la oficina).
+- **Guardar el avance** al terminar cada semana.
+
+---
+
+## Botón Importar — ¿Cómo restaurar un respaldo?
+
+1. En el panel de administración, haga clic en **"Importar respaldo"**.
+2. Seleccione el archivo `.json` que exportó anteriormente.
+3. Los datos se restaurarán automáticamente.
+
+> Nota: la importación **reemplaza** los datos actuales con los del archivo. Si desea conservar los datos actuales, exporte primero.
+
+---
+
+## Cómo restaurar los datos de ejemplo
+
+Si algo salió mal y desea volver al estado inicial con datos de muestra:
+
+1. Vaya al panel de administración (necesita el PIN de maestro).
+2. Haga clic en **"Restaurar datos de ejemplo"**.
+3. Confirme la acción.
+
+Esto borrará todo lo que haya creado y cargará los datos de muestra originales.
+
+> También puede borrar los datos del navegador manualmente: en Chrome, vaya a Configuración → Privacidad → Borrar datos de navegación → Datos de sitios web almacenados.
 
 ---
 
 ## Preguntas frecuentes
 
 **¿Los datos se guardan en internet?**
-Sí, en Firestore (Google Cloud). Cualquier dispositivo con la URL ve los mismos datos en tiempo real.
+No. Todo se guarda en el navegador de su dispositivo (localStorage). Si borra los datos del navegador, se pierden los datos. Por eso recomendamos exportar un respaldo periódicamente.
 
 **¿Pueden los alumnos editar las clases o tareas?**
-No. Solo quien inicia sesión con el correo/contraseña del maestro puede crear, editar o eliminar clases, tareas y anuncios. Los alumnos sí pueden marcar tareas como completadas (ese estado es compartido).
+No. Los alumnos solo pueden ver. Solo quien conoce el PIN puede agregar, editar o eliminar contenido.
+
+**¿Funciona en celular?**
+Sí, la aplicación está diseñada para verse bien en pantallas pequeñas.
 
 **¿Mis alumnos necesitan cuenta o contraseña?**
-No. Entran con "Soy alumno" sin registro.
+No. Los alumnos eligen "Soy alumno" y entran directamente, sin registro ni contraseña.
 
 **¿Puedo usarla para varias materias?**
-Sí, pero necesitaría un proyecto de Firebase separado por materia (o adaptar las rutas de Firestore), cada uno con su propio `lib/config.js` y `lib/firebase-config.js`.
-
-**¿Cuánto cuesta Firebase?**
-El plan gratuito (Spark) de Firestore, Auth y Hosting cubre sin costo el uso típico de un salón de clases.
+Sí, pero necesitaría copias separadas de la carpeta, cada una con su propio `lib/config.js` configurado.
 
 ---
 
@@ -128,22 +139,19 @@ El plan gratuito (Spark) de Firestore, Auth y Hosting cubre sin costo el uso tí
 
 ```
 ucenm/
-├── index.html              ← Archivo principal
-├── firebase.json           ← Configuración de Hosting/Firestore para el CLI
-├── firestore.rules         ← Reglas de seguridad de la base de datos
-├── .firebaserc              ← ID de su proyecto Firebase
+├── index.html          ← Archivo principal (abrir este)
+├── .htaccess           ← Configuración para Hostinger
 ├── css/
-│   └── estilos.css         ← Diseño visual (no modificar)
+│   └── estilos.css     ← Diseño visual (no modificar)
 └── lib/
-    ├── firebase-config.js  ← ✏️ EDITAR: llaves de su proyecto Firebase
-    ├── config.js            ← ✏️ EDITAR: materia, maestro, ciclo
-    ├── datos-ejemplo.js     ← Datos de muestra (para "Restaurar ejemplo")
-    ├── almacenamiento.js    ← Conexión a Firestore/Auth (no modificar)
-    ├── calendario.js        ← Módulo de calendario (no modificar)
-    ├── tareas.js             ← Módulo de tareas (no modificar)
-    ├── anuncios.js           ← Módulo de anuncios (no modificar)
-    ├── admin.js               ← Panel de administración (no modificar)
-    └── app.js                ← Lógica principal, login (no modificar)
+    ├── config.js       ← ✏️ EDITAR: PIN, materia, maestro, ciclo
+    ├── datos-ejemplo.js ← Datos de muestra iniciales
+    ├── almacenamiento.js ← Lógica de guardado (no modificar)
+    ├── calendario.js   ← Módulo de calendario (no modificar)
+    ├── tareas.js       ← Módulo de tareas (no modificar)
+    ├── anuncios.js     ← Módulo de anuncios (no modificar)
+    ├── admin.js        ← Panel de administración (no modificar)
+    └── app.js          ← Lógica principal (no modificar)
 ```
 
 ---
