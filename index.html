@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="UCENM — Plataforma de gestión académica para maestros y alumnos de la Universidad Cristiana Evangélica Nuevo Milenio de Honduras.">
+  <meta name="theme-color" content="#003A75">
+  <title>UCENM — Gestión Académica</title>
+
+  <!-- Favicon inline SVG via data URI -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Ccircle cx='40' cy='40' r='38' fill='%23003A75' stroke='%23C9A327' stroke-width='2.5'/%3E%3Ctext x='40' y='30' text-anchor='middle' font-family='Arial' font-size='11' font-weight='700' fill='%23C9A327'%3EUCENM%3C/text%3E%3Ctext x='40' y='44' text-anchor='middle' font-family='Arial' font-size='7' fill='rgba(255,255,255,.85)'%3EUNIVERSIDAD%3C/text%3E%3C/svg%3E">
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="css/estilos.css?v=20260626">
+</head>
+<body>
+
+  <!-- =====================================================
+       PANTALLA DE SELECCIÓN DE ROL
+       Se muestra al abrir la app (antes de elegir rol)
+       ===================================================== -->
+  <div id="pantalla-rol" aria-live="polite">
+    <!-- Renderizado por app.js al cargar -->
+    <!-- Contenido de respaldo si JS no carga: -->
+    <noscript>
+      <div style="background:#fff;padding:2rem;border-radius:12px;max-width:440px;margin:2rem auto;text-align:center;">
+        <h1 style="color:#003A75;font-family:sans-serif">UCENM — Gestión Académica</h1>
+        <p style="color:#6B7280;font-family:sans-serif;margin-top:1rem">
+          Esta aplicación requiere JavaScript para funcionar.<br>
+          Por favor active JavaScript en su navegador e intente de nuevo.
+        </p>
+        <hr style="margin:1.5rem 0">
+        <p style="font-family:sans-serif;font-size:.9rem;color:#374151">
+          <strong>Universidad Cristiana Evangélica Nuevo Milenio</strong><br>
+          San Pedro Sula, Honduras<br>
+          <a href="https://web.ucenm.net" style="color:#005BAA">web.ucenm.net</a> ·
+          <a href="mailto:info@ucenm.net" style="color:#005BAA">info@ucenm.net</a> ·
+          Tel. 2557-0607
+        </p>
+      </div>
+    </noscript>
+  </div>
+
+  <!-- =====================================================
+       CABECERA INSTITUCIONAL (se rellena con JS)
+       ===================================================== -->
+  <header id="app-header" role="banner" aria-label="Cabecera institucional UCENM">
+    <!-- Renderizado por app.js -->
+  </header>
+
+  <!-- =====================================================
+       CONTENIDO PRINCIPAL
+       ===================================================== -->
+  <main id="app-main" class="hidden" role="main">
+
+    <!-- SECCIÓN: INICIO / DASHBOARD -->
+    <section id="sec-inicio" class="seccion" aria-label="Panel de inicio">
+      <!-- Renderizado por app.js -->
+    </section>
+
+    <!-- SECCIÓN: CALENDARIO -->
+    <section id="sec-calendario" class="seccion" aria-label="Calendario de clases">
+      <!-- Renderizado por calendario.js -->
+    </section>
+
+    <!-- SECCIÓN: TAREAS -->
+    <section id="sec-tareas" class="seccion" aria-label="Listado de tareas">
+      <!-- Renderizado por tareas.js -->
+    </section>
+
+    <!-- SECCIÓN: ANUNCIOS -->
+    <section id="sec-anuncios" class="seccion" aria-label="Anuncios del maestro">
+      <!-- Renderizado por anuncios.js -->
+    </section>
+
+    <!-- SECCIÓN: ADMINISTRACIÓN (solo maestro) -->
+    <section id="sec-admin" class="seccion" aria-label="Panel de administración">
+      <!-- Renderizado por admin.js -->
+    </section>
+
+  </main>
+
+  <!-- =====================================================
+       FOOTER INSTITUCIONAL (se rellena con JS)
+       ===================================================== -->
+  <footer id="app-footer" class="hidden" role="contentinfo" aria-label="Pie de página institucional">
+    <!-- Renderizado por app.js -->
+  </footer>
+
+  <!-- =====================================================
+       CONTENEDOR DE NOTIFICACIONES (TOAST)
+       ===================================================== -->
+  <div id="toast-container" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- =====================================================
+       SCRIPTS — orden crítico: Firebase SDK → config Firebase →
+       config app → datos → DB → módulos → app
+       ?v=YYYYMMDD actúa como cache-buster
+       ===================================================== -->
+
+  <!-- 0. SDK de Firebase (compat, para funcionar con scripts clásicos ES5) -->
+  <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+  <!-- 0.1 Configuración de su proyecto Firebase (EDITAR con sus llaves) -->
+  <script defer src="lib/firebase-config.js?v=20260630"></script>
+
+  <!-- 1. Configuración editable por el maestro -->
+  <script defer src="lib/config.js?v=20260626"></script>
+
+  <!-- 2. Datos de ejemplo (se cargan solo la primera vez) -->
+  <script defer src="lib/datos-ejemplo.js?v=20260626"></script>
+
+  <!-- 3. Almacenamiento, utilidades de fecha, toast y backup -->
+  <script defer src="lib/almacenamiento.js?v=20260626"></script>
+
+  <!-- 4. Módulo de calendario -->
+  <script defer src="lib/calendario.js?v=20260626"></script>
+
+  <!-- 5. Módulo de tareas -->
+  <script defer src="lib/tareas.js?v=20260626"></script>
+
+  <!-- 6. Módulo de anuncios -->
+  <script defer src="lib/anuncios.js?v=20260626"></script>
+
+  <!-- 7. Panel de administración (solo maestro) -->
+  <script defer src="lib/admin.js?v=20260626"></script>
+
+  <!-- 8. Aplicación principal: roles, nav, dashboard -->
+  <script defer src="lib/app.js?v=20260626"></script>
+
+</body>
+</html>
